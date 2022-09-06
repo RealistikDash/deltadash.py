@@ -41,6 +41,10 @@ class Difficulty:
     bpm_events: list[BPMEvent] = field(default_factory=list)
     fever_events: list[FeverEvent] = field(default_factory=list)
 
+    @property
+    def full_name(self) -> str:
+        return f"{self.artist} - {self.title} [{self.name}]"
+
     @staticmethod
     def from_str(string: str) -> Difficulty:
         """Parses a string of a `.dd` file's contents into a `Difficulty` object."""
@@ -159,3 +163,14 @@ class Difficulty:
         section_str += "\n"
 
         return section_str
+    
+    def into_file(self, path: str) -> None:
+        """Writes the contents of the `Difficulty` object into a DeltaDash compliant
+        `.dd` file.
+        
+        Internally, it just calls `Difficulty.into_str` and writes the result to the
+        specified file.
+        """
+        
+        with open(path, "w") as file:
+            file.write(self.into_str())
