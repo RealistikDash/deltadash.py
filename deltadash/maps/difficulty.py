@@ -9,6 +9,7 @@ from deltadash.maps.event import (
     FeverEvent,
 )
 from dataclasses import dataclass
+from dataclasses import field
 
 @dataclass
 class Difficulty:
@@ -33,12 +34,12 @@ class Difficulty:
     sensitivity: float
 
     # Difficulty contents
-    notes: list[Note]
+    notes: list[Note] = field(default_factory=list)
 
     # Events
-    speed_events: list[SpeedEvent]
-    bpm_events: list[BPMEvent]
-    fever_events: list[FeverEvent]
+    speed_events: list[SpeedEvent] = field(default_factory=list)
+    bpm_events: list[BPMEvent] = field(default_factory=list)
+    fever_events: list[FeverEvent] = field(default_factory=list)
 
     @staticmethod
     def from_str(string: str) -> Difficulty:
@@ -64,7 +65,7 @@ class Difficulty:
         # Difficulty Settings
         speed = float(sections["Difficulty"]["Speed"])
         health = float(sections["Difficulty"]["Health"])
-        sensitivity = float(sections["Difficulty"]["Sensitivity"])
+        sensitivity = float(sections["Difficulty"]["Sensivity"]) # The typo is in the .dd files
 
         # This is a bit cursed but required if we want to use an ini parser.
         # In this case, the dictionary keys are the note string we are lookign
@@ -122,10 +123,10 @@ class Difficulty:
         """Constructs a valid `.dd` file str from the contents of the `Difficulty` object."""
         sections = {
             "General": {
-                "Artist": self.artist,
                 "Title": self.title,
-                "DiffName": self.name,
+                "Artist": self.artist,
                 "Mapper": self.mapper,
+                "DiffName": self.name,
             },
             "Metadata": {
                 "PreviewPoint": self.preview_ms,
@@ -138,11 +139,12 @@ class Difficulty:
             "Difficulty": {
                 "Speed": self.speed,
                 "Health": self.health,
-                "Sensitivity": self.sensitivity,
+                "Sensivity": self.sensitivity, # The typo is in the .dd files
             }
         }
 
-        section_str = "\n\n".join(
+        section_str = "\n"
+        section_str += "\n\n".join(
             parser.ini.into_section_str(section, contents)
             for section, contents in sections.items()
         )
