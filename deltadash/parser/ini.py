@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from collections import defaultdict
+
 
 def parse(contents: str) -> dict[str, dict[str, str]]:
     """Parse a .ini file into a dictionary of sections and key-value pairs."""
@@ -17,12 +20,13 @@ def parse(contents: str) -> dict[str, dict[str, str]]:
                 key = value_pair[0]
                 value = ""
             sections[section][key] = value
-    
+
     return dict(sections)
+
 
 def into_section_str(name: str, contents: dict[str, str]) -> str:
     """Convert a section dictionary into a string."""
     section = f"[{name}]\n"
     section += "\n".join(f"{key}:{value}" for key, value in contents.items())
-    
+
     return section

@@ -1,11 +1,12 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
-from deltadash.enums.note import (
-    NoteDirection,
-    NotePosition,
-    NoteType,
-    NoteHitSound,
-)
+
+from deltadash.enums.note import NoteDirection
+from deltadash.enums.note import NoteHitSound
+from deltadash.enums.note import NotePosition
+from deltadash.enums.note import NoteType
+
 
 @dataclass
 class Note:
@@ -29,8 +30,10 @@ class Note:
             NoteHitSound(int(hitsound)),
             int(length_ms),
         )
-    
+
     def into_str(self) -> str:
         """Returns the comma-separated string of a note."""
-        return (f"{self.time_ms},{self.position.value},{self.type.value},{self.direction.value},"
-                f"{self.hitsound.value},{self.length_ms}")
+        return (
+            f"{self.time_ms},{self.position.value},{self.type.value},{self.direction.value},"
+            f"{self.hitsound.value},{self.length_ms}"
+        )

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import IntEnum
 
 
@@ -14,6 +16,7 @@ class NoteType(IntEnum):
 class NoteDirection(IntEnum):
     LEFT = 0
     RIGHT = 1
+
 
 class NoteHitSound(IntEnum):
     NORMAL = 0

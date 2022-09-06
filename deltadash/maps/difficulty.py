@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from deltadash import parser
-from deltadash.enums.event import EventType
-from deltadash.maps.note import Note
-from deltadash.maps.event import (
-    SpeedEvent,
-    BPMEvent,
-    FeverEvent,
-)
 from dataclasses import dataclass
 from dataclasses import field
+
+from deltadash import parser
+from deltadash.enums.event import EventType
+from deltadash.maps.event import BPMEvent
+from deltadash.maps.event import FeverEvent
+from deltadash.maps.event import SpeedEvent
+from deltadash.maps.note import Note
+
 
 @dataclass
 class Difficulty:
@@ -69,14 +69,14 @@ class Difficulty:
         # Difficulty Settings
         speed = float(sections["Difficulty"]["Speed"])
         health = float(sections["Difficulty"]["Health"])
-        sensitivity = float(sections["Difficulty"]["Sensivity"]) # The typo is in the .dd files
+        sensitivity = float(
+            sections["Difficulty"]["Sensivity"],
+        )  # The typo is in the .dd files
 
         # This is a bit cursed but required if we want to use an ini parser.
         # In this case, the dictionary keys are the note string we are lookign
         # for, and the values are empty.
-        notes = [
-            Note.from_str(note) for note in sections["HitObjects"]
-        ]
+        notes = [Note.from_str(note) for note in sections["HitObjects"]]
 
         # Likewise for events.
         speed_events = []
@@ -112,15 +112,15 @@ class Difficulty:
             bpm_events,
             fever_events,
         )
-    
+
     @staticmethod
     def from_file(path: str) -> Difficulty:
         """Parses a `.dd` file into a `Difficulty` object.
-        
+
         Opens a `.dd` file, reading its contents fully at once and calls
         `Difficulty.from_str` to parse the contents into a `Difficulty` object.
         """
-        with open(path, "r") as file:
+        with open(path) as file:
             return Difficulty.from_str(file.read())
 
     def into_str(self) -> str:
@@ -143,8 +143,8 @@ class Difficulty:
             "Difficulty": {
                 "Speed": self.speed,
                 "Health": self.health,
-                "Sensivity": self.sensitivity, # The typo is in the .dd files
-            }
+                "Sensivity": self.sensitivity,  # The typo is in the .dd files
+            },
         }
 
         section_str = "\n"
@@ -158,19 +158,20 @@ class Difficulty:
 
         section_str += "\n\n[Events]\n"
         section_str += "\n".join(
-            event.into_str() for event in self.speed_events + self.bpm_events + self.fever_events
+            event.into_str()
+            for event in self.speed_events + self.bpm_events + self.fever_events
         )
         section_str += "\n"
 
         return section_str
-    
+
     def into_file(self, path: str) -> None:
         """Writes the contents of the `Difficulty` object into a DeltaDash compliant
         `.dd` file.
-        
+
         Internally, it just calls `Difficulty.into_str` and writes the result to the
         specified file.
         """
-        
+
         with open(path, "w") as file:
             file.write(self.into_str())
