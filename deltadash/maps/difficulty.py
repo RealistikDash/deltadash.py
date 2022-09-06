@@ -1,7 +1,13 @@
 from __future__ import annotations
 
 from deltadash import parser
+from deltadash.enums.event import EventType
 from deltadash.maps.note import Note
+from deltadash.maps.event import (
+    SpeedEvent,
+    BPMEvent,
+    FeverEvent,
+)
 from dataclasses import dataclass
 
 @dataclass
@@ -30,7 +36,9 @@ class Difficulty:
     notes: list[Note]
 
     # Events
-    ...
+    speed_events: list[SpeedEvent]
+    bpm_events: list[BPMEvent]
+    fever_events: list[FeverEvent]
 
     @staticmethod
     def from_str(string: str) -> Difficulty:
@@ -65,6 +73,21 @@ class Difficulty:
             Note.from_str(note) for note in sections["HitObjects"]
         ]
 
+        # Likewise for events.
+        speed_events = []
+        bpm_events = []
+        fever_events = []
+
+        for event in sections["Events"]:
+            event_type = EventType(int(event.split(",")[0]))
+
+            if event_type is EventType.SPEED_CHANGE:
+                speed_events.append(SpeedEvent.from_str(event))
+            elif event_type is EventType.BPM_CHANGE:
+                bpm_events.append(BPMEvent.from_str(event))
+            elif event_type is EventType.FEVER_TOGGLE:
+                fever_events.append(FeverEvent.from_str(event))
+
         return Difficulty(
             artist,
             title,
@@ -80,6 +103,9 @@ class Difficulty:
             health,
             sensitivity,
             notes,
+            speed_events,
+            bpm_events,
+            fever_events,
         )
     
     @staticmethod
