@@ -19,3 +19,10 @@ def parse(contents: str) -> dict[str, dict[str, str]]:
             sections[section][key] = value
     
     return dict(sections)
+
+def into_section_str(name: str, contents: dict[str, str]) -> str:
+    """Convert a section dictionary into a string."""
+    section = f"[{name}]\n"
+    section += "\n".join(f"{key}:{value}" for key, value in contents.items())
+    
+    return section

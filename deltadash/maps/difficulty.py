@@ -47,10 +47,10 @@ class Difficulty:
         sections = parser.ini.parse(string)
 
         # Song Metadata
-        artist = sections["Metadata"]["Artist"]
-        title = sections["Metadata"]["Title"]
-        name = sections["Metadata"]["DiffName"]
-        mapper = sections["Metadata"]["Mapper"]
+        artist = sections["General"]["Artist"]
+        title = sections["General"]["Title"]
+        name = sections["General"]["DiffName"]
+        mapper = sections["General"]["Mapper"]
 
         # Map Metadata
         preview_ms = int(sections["Metadata"]["PreviewPoint"])
@@ -117,3 +117,43 @@ class Difficulty:
         """
         with open(path, "r") as file:
             return Difficulty.from_str(file.read())
+
+    def into_str(self) -> str:
+        """Constructs a valid `.dd` file str from the contents of the `Difficulty` object."""
+        sections = {
+            "General": {
+                "Artist": self.artist,
+                "Title": self.title,
+                "DiffName": self.name,
+                "Mapper": self.mapper,
+            },
+            "Metadata": {
+                "PreviewPoint": self.preview_ms,
+                "Background": self.background_path,
+                "Thumbnail": self.thumbnail_path,
+                "Audio": self.audio_path,
+                "BeatmapID": self.id,
+                "BeatmapsetID": self.set_id,
+            },
+            "Difficulty": {
+                "Speed": self.speed,
+                "Health": self.health,
+                "Sensitivity": self.sensitivity,
+            }
+        }
+
+        section_str = "\n\n".join(
+            parser.ini.into_section_str(section, contents)
+            for section, contents in sections.items()
+        )
+
+        section_str += "\n\n[HitObjects]\n"
+        section_str += "\n".join(note.into_str() for note in self.notes)
+
+        section_str += "\n\n[Events]\n"
+        section_str += "\n".join(
+            event.into_str() for event in self.speed_events + self.bpm_events + self.fever_events
+        )
+        section_str += "\n"
+
+        return section_str
